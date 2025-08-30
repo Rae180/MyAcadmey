@@ -4,6 +4,14 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 abstract class BaseApiService {
+  Future<dynamic> putRequest({
+    required String url,
+    required Map<String, dynamic> jsonBody,
+  });
+  Future<dynamic> putRequestAuth({
+    required String url,
+    required Map<String, dynamic> jsonBody,
+  });
   Future<dynamic> getRequest({required String url});
   Future<dynamic> postRequest(
       {required String url, required Map<String, dynamic> jsonBody});

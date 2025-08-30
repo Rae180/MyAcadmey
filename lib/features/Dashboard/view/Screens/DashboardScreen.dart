@@ -1,310 +1,525 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:start/core/api_service/network_api_service_http.dart';
+import 'package:start/core/constants/app_constants.dart';
+import 'package:start/features/Dashboard/Bloc/bloc/places_bloc.dart';
+import 'package:start/features/Dashboard/Models/PlacesModel.dart';
 
-class DashboardScreen extends StatelessWidget {
-  static const String routeNaame = '/dashboard_screen';
+class DashboardScreen extends StatefulWidget {
+  static const String routeName = '/dashboard';
+
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
+class _DashboardScreenState extends State<DashboardScreen> {
+  late PlacesBloc _placesBloc;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  bool _placesLoaded = false;
 
+  Color get shimmerBaseColor => Theme.of(context).brightness == Brightness.dark
+      ? Colors.grey[800]!
+      : Colors.grey[300]!;
 
+  Color get shimmerHighlightColor =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[700]!
+          : Colors.grey[100]!;
 
+  @override
+  void initState() {
+    super.initState();
+    _placesBloc = PlacesBloc(client: NetworkApiServiceHttp());
+  }
 
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:syncfusion_flutter_charts/charts.dart';
+  void _handleRefresh() {
+    _placesBloc.add(GetPlacesEvent());
+    setState(() {
+      _placesLoaded = false;
+    });
+  }
 
-// // Define classes at the top to ensure visibility
-// class Activity {
-//   final String title;
-//   final String subtitle;
-//   final String time;
-//   final IconData icon;
-//   final Color color;
+  void _showAddPlaceDialog(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    final _placeNameController = TextEditingController();
+    final _priceController = TextEditingController();
 
-//   Activity(this.title, this.subtitle, this.time, this.icon, this.color);
-// }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocListener<PlacesBloc, PlacesState>(
+          listener: (context, state) {
+            if (state is AddNewPlaceSuccess) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'تمت إضافة المكان بنجاح',
+                    style: TextStyle(fontFamily: AppConstants.primaryFont),
+                  ),
+                ),
+              );
+              _placesBloc.add(GetPlacesEvent());
+            }
+            if (state is PlacesError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.message,
+                    style: TextStyle(fontFamily: AppConstants.primaryFont),
+                  ),
+                ),
+              );
+            }
+          },
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'إضافة مكان جديد',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: AppConstants.primaryFont,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _placeNameController,
+                      decoration: InputDecoration(
+                        labelText: 'اسم المكان',
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.cardRadius),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'يرجى إدخال اسم المكان';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'السعر',
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.cardRadius),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'يرجى إدخال السعر';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'يرجى إدخال رقم صحيح';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontFamily: AppConstants.primaryFont,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _placesBloc.add(AddNewPlaceEvent(
+                                placeName: _placeNameController.text,
+                                price: _priceController.text,
+                              ));
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: Text(
+                            'حفظ',
+                            style:
+                                TextStyle(fontFamily: AppConstants.primaryFont),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-// class RevenueData {
-//   final DateTime date;
-//   final double amount;
-//   RevenueData(this.date, this.amount);
-// }
+  void _showEditPlaceDialog(BuildContext context, Places place) {
+    final _formKey = GlobalKey<FormState>();
+    final _priceController =
+        TextEditingController(text: place.price.toString());
 
-// class ResourceData {
-//   final String type;
-//   final int count;
-//   final Color color;
-//   ResourceData(this.type, this.count, this.color);
-// }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocListener<PlacesBloc, PlacesState>(
+          listener: (context, state) {
+            if (state is UpdatePlaceSuccess) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'تم تعديل السعر بنجاح',
+                    style: TextStyle(fontFamily: AppConstants.primaryFont),
+                  ),
+                ),
+              );
+              _placesBloc.add(GetPlacesEvent());
+            }
+            if (state is PlacesError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.message,
+                    style: TextStyle(fontFamily: AppConstants.primaryFont),
+                  ),
+                ),
+              );
+            }
+          },
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'تعديل سعر المكان',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: AppConstants.primaryFont,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      place.place ?? 'No Name',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: AppConstants.primaryFont,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'السعر الجديد',
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.cardRadius),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'يرجى إدخال السعر';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'يرجى إدخال رقم صحيح';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontFamily: AppConstants.primaryFont,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _placesBloc.add(UpdatePlaceEvent(
+                                place: place.place!,
+                                price: _priceController.text,
+                              ));
+                            }
+                          },
+                          child: Text(
+                            'حفظ',
+                            style:
+                                TextStyle(fontFamily: AppConstants.primaryFont),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-// class DashboardScreen extends StatelessWidget {
-//   const DashboardScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onBackground;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           _buildSummaryCards(),
-//           const SizedBox(height: 24),
-//           Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Expanded(
-//                 flex: 2,
-//                 child: _buildRevenueChart(),
-//               ),
-//               const SizedBox(width: 16),
-//               Expanded(
-//                 child: _buildResourceChart(),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 24),
-//           _buildRecentActivity(),
-//         ],
-//       ),
-//     );
-//   }
+    return BlocProvider.value(
+      value: _placesBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: _buildAppBar(context, textColor),
+        body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
+            _handleRefresh();
+          },
+          child: _buildBody(context, textColor),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddPlaceDialog(context),
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
+  }
 
-//   Widget _buildSummaryCards() {
-//     return GridView.count(
-//       shrinkWrap: true,
-//       physics: const NeverScrollableScrollPhysics(),
-//       crossAxisCount: 4,
-//       crossAxisSpacing: 16,
-//       mainAxisSpacing: 16,
-//       childAspectRatio: 2.5,
-//       children: [
-//         _summaryCard('Total Rooms', '24', Icons.room, Colors.blue),
-//         _summaryCard('Active Items', '156', Icons.chair, Colors.green),
-//         _summaryCard('Sub-Galleries', '8', Icons.business, Colors.amber),
-//         _summaryCard('Active Users', '1,248', Icons.people, Colors.purple),
-//         _summaryCard(
-//             'Revenue (30d)', '\$24,560', Icons.attach_money, Colors.teal),
-//         _summaryCard('Orders', '324', Icons.shopping_cart, Colors.orange),
-//         _summaryCard('Reports', '42', Icons.report, Colors.red),
-//         _summaryCard('Satisfaction', '92%', Icons.emoji_emotions, Colors.pink),
-//       ],
-//     );
-//   }
+  AppBar _buildAppBar(BuildContext context, Color textColor) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      title: Text(
+        'الأماكن',
+        style: TextStyle(
+          color: textColor,
+          fontFamily: AppConstants.primaryFont,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: _handleRefresh,
+          tooltip: 'تحديث',
+        ),
+      ],
+      centerTitle: true,
+    );
+  }
 
-//   Widget _summaryCard(String title, String value, IconData icon, Color color) {
-//     return Card(
-//       elevation: 4,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(12),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Row(
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(12),
-//               decoration: BoxDecoration(
-//                 color: color.withOpacity(0.2),
-//                 shape: BoxShape.circle,
-//               ),
-//               child: Icon(icon, color: color),
-//             ),
-//             const SizedBox(width: 16),
-//             Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text(
-//                   title,
-//                   style: const TextStyle(
-//                     fontSize: 14,
-//                     color: Colors.grey,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 4),
-//                 Text(
-//                   value,
-//                   style: const TextStyle(
-//                     fontSize: 20,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  Widget _buildBody(BuildContext context, Color textColor) {
+    return BlocConsumer<PlacesBloc, PlacesState>(
+      listener: (context, state) {
+        if (state is GetPlacesSuccess) {
+          _placesLoaded = true;
+        }
+      },
+      builder: (context, state) {
+        if (state is PlacesLoading) {
+          return _buildShimmerLoader();
+        }
+        if (state is GetPlacesSuccess) {
+          return _buildPlacesListView(state.places, textColor);
+        }
+        if (state is PlacesError) {
+          return _buildErrorWidget(state.message, textColor);
+        }
+        // Initial state - load places
+        if (!_placesLoaded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _placesBloc.add(GetPlacesEvent());
+          });
+        }
+        return _buildShimmerLoader();
+      },
+    );
+  }
 
-//   Widget _buildRevenueChart() {
-//     final revenueData = [
-//       RevenueData(DateTime(2023, 1), 12),
-//       RevenueData(DateTime(2023, 2), 15),
-//       RevenueData(DateTime(2023, 3), 18),
-//       RevenueData(DateTime(2023, 4), 16),
-//       RevenueData(DateTime(2023, 5), 22),
-//       RevenueData(DateTime(2023, 6), 25),
-//       RevenueData(DateTime(2023, 7), 28),
-//       RevenueData(DateTime(2023, 8), 24),
-//       RevenueData(DateTime(2023, 9), 26),
-//       RevenueData(DateTime(2023, 10), 29),
-//       RevenueData(DateTime(2023, 11), 27),
-//       RevenueData(DateTime(2023, 12), 30),
-//     ];
+  Widget _buildPlacesListView(PlacesModel places, Color textColor) {
+    if (places.places == null || places.places!.isEmpty) {
+      return Center(
+        child: Text(
+          'لا يوجد أماكن حالياً',
+          style: TextStyle(
+            color: textColor,
+            fontFamily: AppConstants.primaryFont,
+          ),
+        ),
+      );
+    }
 
-//     return Card(
-//       elevation: 4,
-//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//       child: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             const Text('Revenue Overview',
-//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-//             const SizedBox(height: 16),
-//             SizedBox(
-//               height: 300,
-//               child: SfCartesianChart(
-//                 primaryXAxis: DateTimeAxis(
-//                     intervalType: DateTimeIntervalType.months,
-//                     dateFormat: DateFormat.MMM(),
-//                     title: AxisTitle(text: 'Month')),
-//                 primaryYAxis: NumericAxis(
-//                     title: AxisTitle(text: 'Amount (k USD)'),
-//                     numberFormat:
-//                         NumberFormat.simpleCurrency(decimalDigits: 0)),
-//                 // Fixed: Use CartesianSeries instead of ChartSeries
-//                 series: <CartesianSeries>[
-//                   LineSeries<RevenueData, DateTime>(
-//                     dataSource: revenueData,
-//                     xValueMapper: (RevenueData data, _) => data.date,
-//                     yValueMapper: (RevenueData data, _) => data.amount,
-//                     color: Colors.blue,
-//                     width: 3,
-//                     markerSettings: const MarkerSettings(isVisible: true),
-//                   )
-//                 ],
-//                 tooltipBehavior: TooltipBehavior(enable: true),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppConstants.sectionPadding),
+      itemCount: places.places!.length,
+      itemBuilder: (context, index) {
+        final place = places.places![index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: AppConstants.elementSpacing),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ListTile(
+            leading: CircleAvatar(
+              radius: 25,
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+              child: Icon(
+                Icons.place,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            title: Text(
+              place.place ?? 'No Name',
+              style: TextStyle(
+                color: textColor,
+                fontFamily: AppConstants.primaryFont,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.attach_money,
+                      size: 14,
+                      color: textColor.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${place.price ?? 'N/A'}',
+                      style: TextStyle(
+                        color: textColor.withOpacity(0.7),
+                        fontFamily: AppConstants.primaryFont,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.edit,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () => _showEditPlaceDialog(context, place),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-//   Widget _buildResourceChart() {
-//     final resourceData = [
-//       ResourceData('Rooms', 24, Colors.blue),
-//       ResourceData('Items', 156, Colors.green),
-//       ResourceData('Models', 87, Colors.amber),
-//     ];
+  Widget _buildShimmerLoader() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppConstants.sectionPadding),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: shimmerBaseColor,
+          highlightColor: shimmerHighlightColor,
+          child: Container(
+            height: 80,
+            margin: const EdgeInsets.only(bottom: AppConstants.elementSpacing),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-//     return Card(
-//       elevation: 4,
-//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//       child: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             const Text('Resource Distribution',
-//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-//             const SizedBox(height: 16),
-//             SizedBox(
-//               height: 300,
-//               child: SfCircularChart(
-//                 series: <CircularSeries>[
-//                   PieSeries<ResourceData, String>(
-//                     dataSource: resourceData,
-//                     xValueMapper: (ResourceData data, _) => data.type,
-//                     yValueMapper: (ResourceData data, _) => data.count,
-//                     pointColorMapper: (ResourceData data, _) => data.color,
-//                     dataLabelSettings: const DataLabelSettings(
-//                       isVisible: true,
-//                       labelPosition: ChartDataLabelPosition.outside,
-//                       textStyle: TextStyle(fontSize: 12),
-//                     ),
-//                     explode: true,
-//                     explodeIndex: 0,
-//                   )
-//                 ],
-//                 legend: Legend(
-//                     isVisible: true,
-//                     position: LegendPosition.bottom,
-//                     overflowMode: LegendItemOverflowMode.wrap),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  Widget _buildErrorWidget(String message, Color textColor) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            style: TextStyle(
+              color: textColor,
+              fontFamily: AppConstants.primaryFont,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _handleRefresh,
+            child: Text(
+              'إعادة المحاولة',
+              style: TextStyle(
+                fontFamily: AppConstants.primaryFont,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-//   Widget _buildRecentActivity() {
-//     final activities = [
-//       Activity('New Order', 'User: John Doe', '2 min ago', Icons.shopping_cart,
-//           Colors.green),
-//       Activity('Room Added', 'Modern Living Room', '1 hour ago', Icons.room,
-//           Colors.blue),
-//       Activity('Report Submitted', 'Broken 3D model', '3 hours ago',
-//           Icons.report, Colors.red),
-//       Activity('New Sub-Gallery', 'Berlin Showroom', '5 hours ago',
-//           Icons.business, Colors.amber),
-//       Activity('User Registered', 'sarah@example.com', 'Yesterday',
-//           Icons.person_add, Colors.purple),
-//     ];
-
-//     return Card(
-//       elevation: 4,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(12),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             const Text(
-//               'Recent Activity',
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//             const SizedBox(height: 16),
-//             ListView.separated(
-//               shrinkWrap: true,
-//               physics: const NeverScrollableScrollPhysics(),
-//               itemCount: activities.length,
-//               separatorBuilder: (context, index) => const Divider(),
-//               itemBuilder: (context, index) {
-//                 final activity = activities[index];
-//                 return ListTile(
-//                   leading: Container(
-//                     padding: const EdgeInsets.all(8),
-//                     decoration: BoxDecoration(
-//                       color: activity.color.withOpacity(0.2),
-//                       shape: BoxShape.circle,
-//                     ),
-//                     child: Icon(activity.icon, color: activity.color),
-//                   ),
-//                   title: Text(activity.title),
-//                   subtitle: Text(activity.subtitle),
-//                   trailing: Text(
-//                     activity.time,
-//                     style: const TextStyle(color: Colors.grey, fontSize: 12),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  void dispose() {
+    _placesBloc.close();
+    super.dispose();
+  }
+}

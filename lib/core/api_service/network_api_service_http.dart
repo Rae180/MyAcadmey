@@ -11,6 +11,89 @@ import 'package:start/core/utils/services/shared_preferences.dart';
 
 class NetworkApiServiceHttp implements BaseApiService {
   @override
+  Future putRequest({
+    required String url,
+    required Map<String, dynamic> jsonBody,
+  }) async {
+    try {
+      print('url $url');
+      print('the put body ${jsonBody.toString()}');
+
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          'api': '1.0.0',
+          'X-Requested-With': "XMLHttpRequest",
+          "Accept": "application/json",
+        },
+        body: json.encode(jsonBody),
+      );
+
+      print('status code ${response.statusCode}');
+      print('response body: ${response.body}');
+
+      final decodedResponse = DecodeResponse.decode(response);
+      return decodedResponse;
+    } on SocketException {
+      throw ExceptionSocket();
+    } on FormatException {
+      throw ExceptionFormat();
+    } on TimeoutException {
+      throw ExceptionTimeout();
+    } on HandshakeException {
+      throw ExceptionHandshake();
+    } on CustomException catch (e) {
+      throw CustomException(message: e.message);
+    } on Exception {
+      throw ExceptionOther();
+    }
+  }
+
+  @override
+  Future putRequestAuth({
+    required String url,
+    required Map<String, dynamic> jsonBody,
+  }) async {
+    try {
+      String? token = PreferenceUtils.getString('token');
+      print('url $url');
+      print('the put body ${jsonBody.toString()}');
+      print('token: $token');
+
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          'api': '1.0.0',
+          'X-Requested-With': "XMLHttpRequest",
+          "Accept": "application/json",
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: json.encode(jsonBody),
+      );
+
+      print('status code ${response.statusCode}');
+      print('response body: ${response.body}');
+
+      final decodedResponse = DecodeResponse.decode(response);
+      return decodedResponse;
+    } on SocketException {
+      throw ExceptionSocket();
+    } on FormatException {
+      throw ExceptionFormat();
+    } on TimeoutException {
+      throw ExceptionTimeout();
+    } on HandshakeException {
+      throw ExceptionHandshake();
+    } on CustomException catch (e) {
+      throw CustomException(message: e.message);
+    } on Exception {
+      throw ExceptionOther();
+    }
+  }
+
+  @override
   Future getRequest({required String url}) async {
     try {
       //    String? lan = PreferenceUtils.getString(

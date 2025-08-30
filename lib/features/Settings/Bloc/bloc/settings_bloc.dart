@@ -15,36 +15,7 @@ part 'settings_state.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final BaseApiService client;
-  SettingsBloc({required this.client}) : super(SettingsInitial()) {
-    on<GetManagerInfoEvent>(((event, emit) async {
-      emit(SettingsLoading());
-      final result = await BaseRepo.repoRequest(request: () async {
-        final response = await client.getRequestAuth(url: ApiConstants.getInfo);
-        final data = jsonDecode(response.body);
-        final info = ManagerInfo.fromJson(data);
-        return info;
-      });
-      result.fold((f) {
-        emit(_mapFailureToState(f));
-      }, (responseData) {
-        emit(GetManagerInfoSuccess(info: responseData));
-      });
-    }));
-    on<GetAllOrdersEvent>((event, emit) async {
-      final result = await BaseRepo.repoRequest(request: () async {
-        final response =
-            await client.getRequestAuth(url: ApiConstants.getOrders);
-        final data = jsonDecode(response.body);
-        final orders = AllOrdersModel.fromJson(data);
-        return orders;
-      });
-      result.fold((f) {
-        emit(_mapFailureToState(f));
-      }, (responseData) {
-        emit(GetAllOrdersSuccess(orders: responseData));
-      });
-    });
-  }
+  SettingsBloc({required this.client}) : super(SettingsInitial()) {}
   _mapFailureToState(Failure f) {
     switch (f.runtimeType) {
       case OfflineFailure:

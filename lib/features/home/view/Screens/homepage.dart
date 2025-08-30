@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:start/features/Auth/View/Screens/LoginPage.dart';
 import 'package:start/features/Dashboard/view/Screens/DashboardScreen.dart';
-import 'package:start/features/Reports/view/Screens/ReportsScreen.dart';
-import 'package:start/features/Resources/view/Screens/AddItemScreen.dart';
-import 'package:start/features/Resources/view/Screens/AddRoomScreen.dart';
-import 'package:start/features/Resources/view/Screens/ResourcesScreen.dart';
-import 'package:start/features/Resources/view/Screens/UploadGlbScreen.dart';
+import 'package:start/features/Orders/view/Screens/OrdersScreen.dart';
 import 'package:start/features/Settings/View/Screens/SettingsScreen.dart';
-import 'package:start/features/SubGallery/view/Screens/SubGalleriesScreen.dart';
-import 'package:start/features/Users/view/Screens/UsersScreen.dart';
+import 'package:start/features/availableTimes/view/Screens/AvailableTimesScreen.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home_page';
@@ -24,18 +18,14 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _screens = [
     DashboardScreen(),
-    ResourcesScreen(),
-    SubGalleriesScreen(),
-    UsersScreen(),
-    ReportsScreen(),
+    OrdersScreen(),
+    AvailableTimesScreen()
   ];
 
   static const List<String> _titles = [
     'Dashboard',
-    'Resources',
-    'Sub-Galleries',
-    'Users',
-    'Reports'
+    'Orders',
+    'Available Times'
   ];
 
   @override
@@ -44,10 +34,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(_titles[_selectedIndex]),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
@@ -73,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                             const Icon(Icons.photo_library, size: 28),
                             const SizedBox(width: 12),
                             const Expanded(
-                              child: Text('Gallery Manager',
+                              child: Text('Delivery Manager',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                             ),
@@ -102,10 +88,9 @@ class _HomePageState extends State<HomePage> {
                   child: ListView(
                     children: [
                       _buildSidebarItem(Icons.dashboard, 'Dashboard', 0),
-                      _buildSidebarItem(Icons.photo_library, 'Resources', 1),
-                      _buildSidebarItem(Icons.business, 'Sub-Galleries', 2),
-                      _buildSidebarItem(Icons.people, 'Users', 3),
-                      _buildSidebarItem(Icons.report, 'Reports', 4),
+                      _buildSidebarItem(Icons.delivery_dining, 'Orders', 1),
+                      _buildSidebarItem(
+                          Icons.calendar_month, 'Available Times', 2),
                     ],
                   ),
                 ),
@@ -147,46 +132,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAddResourceDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Resource'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Add New Item'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AddItemScreen.routeName);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.room),
-              title: const Text('Add New Room'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AddRoomScreen.routeName);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.room),
-              title: const Text('Add New Model'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, UploadGlbScreen.routeName);
-              },
-            ),
           ],
         ),
       ),

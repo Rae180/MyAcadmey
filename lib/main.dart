@@ -5,10 +5,10 @@ import 'package:start/core/api_service/network_api_service_http.dart';
 import 'package:start/core/locator/service_locator.dart';
 import 'package:start/core/utils/services/shared_preferences.dart';
 import 'package:start/features/Auth/Bloc/AuthBloc/auth_bloc.dart';
-import 'package:start/features/Resources/Bloc/bloc/resources_bloc.dart';
-import 'package:start/features/SubGallery/Bloc/BranchesBloc/branches_bloc.dart';
-import 'package:start/features/Users/Bloc/UsersBloc/users_bloc.dart';
+import 'package:start/features/Dashboard/Bloc/bloc/places_bloc.dart';
+import 'package:start/features/Orders/Bloc/bloc/orders_bloc.dart';
 import 'package:start/features/app/my_app.dart';
+import 'package:start/features/availableTimes/Bloc/bloc/available_times_bloc.dart';
 import 'package:start/features/theme/bloc/theme_bloc.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -25,16 +25,14 @@ void main() async {
           create: (context) => ThemeBloc(),
         ),
         BlocProvider(
-          create: (context) => BranchesBloc(client: NetworkApiServiceHttp()),
+          create: (context) => PlacesBloc(client: NetworkApiServiceHttp()),
         ),
         BlocProvider(
-          create: (context) => ResourcesBloc(client: NetworkApiServiceHttp()),
+          create: (context) => OrdersBloc(client: NetworkApiServiceHttp()),
         ),
         BlocProvider(
-          create: (context) => AuthBloc(client: NetworkApiServiceHttp()),
-        ),
-        BlocProvider(
-          create: (context) => UsersBloc(client: NetworkApiServiceHttp()),
+          create: (context) =>
+              AvailableTimesBloc(client: NetworkApiServiceHttp()),
         ),
       ],
       child: MainApp(
