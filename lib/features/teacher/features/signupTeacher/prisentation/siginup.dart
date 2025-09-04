@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../both/Login/prisentation/loginscreen.dart';
+import '../../../../both/Login/view/Screens/loginscreen.dart';
 import '../../../../util/colors.dart';
 import '../../../../util/defaultbutton.dart';
 import '../../../../util/myTextField.dart';

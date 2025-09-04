@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:start/config/routes/app_router.dart';
+import 'package:start/features/both/Login/view/Screens/loginscreen.dart';
 import 'package:start/features/localization/cubit/lacalization_cubit.dart';
 import 'package:start/features/localization/localize_app_impl.dart';
 import 'package:start/features/theme/GradientWrraper.dart';
@@ -46,7 +47,7 @@ class MainApp extends StatelessWidget {
                         GradientWrapper(child: child!, isDarkMode: isDarkMode),
                       );
                     },
-                    home: Scaffold(),
+                    home: Login(),
                     title: 'APP',
                     navigatorKey: navigatorKey,
                     debugShowCheckedModeBanner: false,

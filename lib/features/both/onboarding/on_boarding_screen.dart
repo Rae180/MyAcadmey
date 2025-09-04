@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:start/features/Student/featuers/signup/prisentation/siginup.dart';
+import 'package:start/features/Student/featuers/signup/view/Screens/siginup.dart';
 import 'package:start/features/teacher/features/signupTeacher/prisentation/siginup.dart';
 
 // import '../../Student/featuers/signup/prisentation/siginup.dart';
