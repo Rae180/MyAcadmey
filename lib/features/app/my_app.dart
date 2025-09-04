@@ -2,9 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:start/config/routes/app_router.dart';
-import 'package:start/features/Auth/View/Screens/LoginPage.dart';
-import 'package:start/features/home/view/Screens/homepage.dart';
 import 'package:start/features/localization/cubit/lacalization_cubit.dart';
 import 'package:start/features/localization/localize_app_impl.dart';
 import 'package:start/features/theme/GradientWrraper.dart';
@@ -34,24 +33,33 @@ class MainApp extends StatelessWidget {
                   ? themeState.isDarkMode
                   : Theme.of(context).brightness == Brightness.dark;
 
-              return MaterialApp(
+              return ScreenUtilInit(
+                // Wrap with ScreenUtilInit
+                designSize: const Size(390, 844),
+                minTextAdapt: true,
+                splitScreenMode: true,
                 builder: (context, child) {
-                  return EasyLoading.init()(
-                    context,
-                    GradientWrapper(child: child!, isDarkMode: isDarkMode),
+                  return MaterialApp(
+                    builder: (context, child) {
+                      return EasyLoading.init()(
+                        context,
+                        GradientWrapper(child: child!, isDarkMode: isDarkMode),
+                      );
+                    },
+                    home: Scaffold(),
+                    title: 'APP',
+                    navigatorKey: navigatorKey,
+                    debugShowCheckedModeBanner: false,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    locale: langState.locale,
+                    theme: lightTheme,
+                    darkTheme: darkTheme,
+                    themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    onGenerateRoute: appRouter.onGenerateRoute,
                   );
                 },
-                home: const LoginPage(),
-                title: 'APP',
-                navigatorKey: navigatorKey,
-                debugShowCheckedModeBanner: false,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                locale: langState.locale,
-                theme: lightTheme,
-                darkTheme: darkTheme,
-                themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                onGenerateRoute: appRouter.onGenerateRoute,
               );
             },
           );

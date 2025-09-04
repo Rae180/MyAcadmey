@@ -10,7 +10,7 @@ Future<void> setupLocator() async {
   if (kIsWeb) {
     sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoWeb());
   } else {
-    sl.registerLazySingleton(() => InternetConnectionChecker());
+    sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
     sl.registerLazySingleton<NetworkInfo>(
       () => NetworkInfoImpl(internetConnectionChecker: sl()),
     );
