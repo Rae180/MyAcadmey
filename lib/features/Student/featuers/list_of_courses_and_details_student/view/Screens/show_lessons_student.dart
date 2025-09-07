@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../util/colors.dart';
-import '../data/show_lessons_student_model.dart';
-import 'bloc/cubit.dart';
-import 'bloc/status.dart';
+import '../../../../../util/colors.dart';
+import '../../Models/show_lessons_student_model.dart';
+import '../bloc/cubit.dart';
+import '../bloc/status.dart';
 
 class ShowLessonsStudent extends StatelessWidget {
    ShowLessonsStudent({Key? key,required this.id}) : super(key: key);

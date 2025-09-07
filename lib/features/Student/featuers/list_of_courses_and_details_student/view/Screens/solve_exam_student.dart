@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../util/colors.dart';
+import '../../../../../util/colors.dart';
 
 import 'package:flutter/material.dart';
 
-import '../data/Question.dart';
-import 'bloc/cubit.dart';
-import 'bloc/status.dart';
+import '../../Models/Question.dart';
+import '../bloc/cubit.dart';
+import '../bloc/status.dart';
 // ... other imports ...
 
 // class Question {

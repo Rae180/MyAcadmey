@@ -13,6 +13,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final BaseApiService client;
   SignupBloc({required this.client}) : super(SignupInitial()) {
     on<SigningupEvent>((event, emit) async {
+      emit(SignUpLoading());
       final result = await BaseRepo.repoRequest(request: () async {
         final response =
             await client.postRequest(url: ApiConstants.register, jsonBody: {

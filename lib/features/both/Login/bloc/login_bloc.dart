@@ -14,6 +14,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final BaseApiService client;
   LoginBloc({required this.client}) : super(LoginInitial()) {
     on<LoginingEvent>((event, emit) async {
+      emit(LoginLoading());
       final result = await BaseRepo.repoRequest(request: () async {
         final response = await client.postRequest(
             url: ApiConstants.login,

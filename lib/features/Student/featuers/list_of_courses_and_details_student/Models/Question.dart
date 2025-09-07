@@ -1,13 +1,9 @@
 class ShowExamQuestionModel {
-  int? status;
-  String? message;
   List<Data>? data;
 
-  ShowExamQuestionModel({this.status, this.message, this.data});
+  ShowExamQuestionModel({this.data});
 
   ShowExamQuestionModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    message = json['message'];
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -18,8 +14,6 @@ class ShowExamQuestionModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -38,12 +32,12 @@ class Data {
 
   Data(
       {this.id,
-        this.examId,
-        this.value,
-        this.choise1,
-        this.choise2,
-        this.choise3,
-        this.correctChoise});
+      this.examId,
+      this.value,
+      this.choise1,
+      this.choise2,
+      this.choise3,
+      this.correctChoise});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];

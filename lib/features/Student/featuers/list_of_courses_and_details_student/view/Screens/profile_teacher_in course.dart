@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/prisentation/bloc/cubit.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/view/bloc/cubit.dart';
 import 'package:start/features/util/colors.dart';
-import 'bloc/status.dart';
+import '../bloc/status.dart';
 
 class ProfileTeacherInCourse extends StatelessWidget {
   //const ProfileTeacherInCourse({Key? key,required this.teacher}) : super(key: key);

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/data/courses_and_offers_model.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/prisentation/bloc/cubit.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/prisentation/bloc/status.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/prisentation/show_lessons_student.dart';
-import 'package:start/features/Student/featuers/list_of_courses_and_details_student/prisentation/solve_exam_student.dart';
-import '../../../../util/colors.dart';
-import '../../../../util/details_container.dart';
-import '../../../../util/summary.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/Models/courses_and_offers_model.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/view/bloc/cubit.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/view/bloc/status.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/view/Screens/show_lessons_student.dart';
+import 'package:start/features/Student/featuers/list_of_courses_and_details_student/view/Screens/solve_exam_student.dart';
+import '../../../../../util/colors.dart';
+import '../../../../../util/details_container.dart';
+import '../../../../../util/summary.dart';
 
 class DetailsCoursesStudent extends StatelessWidget {
   DetailsCoursesStudent({Key? key, required this.courses}) : super(key: key);

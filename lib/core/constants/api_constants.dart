@@ -4,4 +4,8 @@ class ApiConstants {
   static const String STORAGE_URL = "http://10.65.8.140:8000";
   static const String register = '${baseUrl}student/register';
   static const String login = '${baseUrl}login';
+  static const String getPro = '${baseUrl}profile';
+  static const String changepass = '${baseUrl}change-password';
+  static const String certificate = '${baseUrl}certificate';
+  static const String getcourses = '${baseUrl}enrolled-courses';
 }

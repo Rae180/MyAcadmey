@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'colors.dart';
 
 Widget myTextField({
+  bool isPassword = false,
   required TextEditingController controller,
   double height = 46,
   double width = 354,

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:start/features/Student/featuers/home_student/prisentation/bloc/states.dart';
 import '../../../chatting_student_managemetn/prisentation/chatting_student.dart';
 import '../../../list_institute_and_details_student/prisentation/lsit_of_institute_student.dart';
-import '../../../list_of_courses_and_details_student/prisentation/list_of_courses_student.dart';
+import '../../../list_of_courses_and_details_student/view/Screens/list_of_courses_student.dart';
 import '../../../notification_student_management/prisentation/notification_student.dart';
-import '../../../profile_student_management/prisentation/profile_student.dart';
+import '../../../profile_student_management/view/Screens/profile_student.dart';
 
 
 
